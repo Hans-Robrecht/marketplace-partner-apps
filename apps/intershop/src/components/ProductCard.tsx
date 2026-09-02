@@ -8,7 +8,6 @@ interface ImageType {
 }
 
 type Props = CardProps<'article'> & {
-  selected?: boolean;
   title: string;
   subtitle: string;
   identifier?: string;
@@ -24,7 +23,6 @@ type Props = CardProps<'article'> & {
   );
 
 const ProductCard = ({
-  selected,
   identifier,
   price,
   subtitle,
