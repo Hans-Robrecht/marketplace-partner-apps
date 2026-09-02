@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode, useCallback, useEffect, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { ButtonGroup, Button, Stack, Text, TextLink, Select, Flex, FormControl, Note, Paragraph, Box, Popover } from '@contentful/f36-components';
 import { FieldAppSDK, init } from '@contentful/app-sdk';
 import { DeleteIcon } from '@contentful/f36-icons';
@@ -11,7 +11,6 @@ import jsonMapper from '../utils/JsonMapper';
 import { MappedProductJson } from '../types/MappedProductJson';
 import { Blueprint } from '../types/Blueprint';
 import CategoryCard from '../components/CategoryCard';
-import CategoryCardType from '../types/CategoryCard';
 import LoadingIcon from '../components/LoadingIcon';
 import { replaceChannelAndApplication } from '../utils/replace';
 import FetchFilters from '../types/FetchFilters';
@@ -39,10 +38,8 @@ const Field = () => {
   const [channel, setChannel] = useState('');
   const [selectedApplication, setSelectedApplication] = useState('');
   const [selectedChannel, setSelectedChannel] = useState('');
-  const [categoryTotalExcludedProducts, setCategoryTotalExcludedProducts] = useState<{ [key: string]: number }>({});
-  const [categoriesData, setCategoriesData] = useState<Array<Category>>([]);
   const [products, setProducts] = useState<Array<Product>>([]);
-  const [categories, setCategories] = useState<Array<ReactElement<CategoryCardType>>>([]);
+  const [categories, setCategories] = useState<Array<Category>>([]);
   const [errors, setErrors] = useState<Errors>({
     products: [],
     categories: [],
@@ -143,7 +140,7 @@ const Field = () => {
         categories: updatedCategories,
         ...(updatedCategories.length ? {} : { type: '' }),
       });
-      setCategories((prevCategories) => prevCategories.filter((component) => component.key !== id));
+      setCategories((prevCategories) => prevCategories.filter((category) => category.id !== id));
       setJsonContainsData(updatedCategories.length > 0);
     },
     [removeCategoryFromField, sdk.field],
@@ -164,19 +161,6 @@ const Field = () => {
     [sdk.field],
   );
 
-  const renderCategories = useCallback(
-    (categories: Array<Category>): Array<ReactElement<CategoryCardType>> =>
-      categories.map(({ title, id, image }: Category) => (
-        <CategoryCard
-          key={id}
-          thumbnailSrc={image ? `${sdk.parameters.installation.imageBase}${image}` : ''}
-          title={title}
-          onClose={() => handleOnCloseCategory(id, [])}
-        />
-      )),
-    [handleOnCloseCategory, sdk.parameters.installation.imageBase],
-  );
-
   const loadCategories = useCallback(
     (filter: Array<string>, { ...filters }: FetchFilters) => {
       setLoading(true);
@@ -190,7 +174,7 @@ const Field = () => {
         })
         .then(({ elements }: any) => elements.map((element: any) => jsonMapper(categoryMapper, element)))
         .then((mappedJsonElements) => mapCategories(mappedJsonElements, filter, categoryMapper))
-        .then((categories) => setCategoriesData(categories))
+        .then((mappedCategories) => setCategories(mappedCategories))
         .then(() => setLoading(false))
         .catch((error) => {
           setErrors((prevErrors) => ({
@@ -211,7 +195,6 @@ const Field = () => {
         loadProducts(products.join('_or_'), { ...filters });
       } else if (categories.length) {
         // categories is now a flat array of IDs
-        setCategoryTotalExcludedProducts({});
         loadCategories(categories, { ...filters });
       }
     },
@@ -259,12 +242,6 @@ const Field = () => {
       sdk.window.stopAutoResizer();
     };
   }, [sdk.field, sdk.window]);
-
-  useEffect(() => {
-    if (categoriesData?.length && categoryTotalExcludedProducts) {
-      setCategories(renderCategories(categoriesData));
-    }
-  }, [categoriesData, categoryTotalExcludedProducts, categoryTotalExcludedProducts.length, renderCategories]);
 
   init(() => {
     if (initialLoad) {
@@ -501,7 +478,7 @@ const Field = () => {
               />
             ) : (
               <Stack flexDirection="column" spacing="spacingS" alignItems="baseline" style={{ width: '100%' }}>
-                {categoriesData.map((category) => (
+                {categories.map((category) => (
                   <CategoryCard
                     key={category.id}
                     thumbnailSrc={category.image ? `${sdk.parameters.installation.imageBase}${category.image}` : ''}
