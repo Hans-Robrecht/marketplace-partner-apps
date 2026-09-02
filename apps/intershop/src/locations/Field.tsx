@@ -1,8 +1,8 @@
-import React, { ReactElement, ReactNode, useCallback, useEffect, useState } from 'react';
+import { ReactElement, ReactNode, useCallback, useEffect, useState } from 'react';
 import { ButtonGroup, Button, Stack, Text, TextLink, Select, Flex, FormControl, Note, Paragraph, Box, Popover } from '@contentful/f36-components';
 import { FieldAppSDK, init } from '@contentful/app-sdk';
 import { DeleteIcon } from '@contentful/f36-icons';
-import { /* useCMA, */ useSDK } from '@contentful/react-apps-toolkit';
+import { useSDK } from '@contentful/react-apps-toolkit';
 import ProductCard from '../components/ProductCard';
 import { FieldJson } from '../types/FieldJson';
 import { Product } from '../types/Product';
