@@ -205,7 +205,7 @@ const Field = () => {
     (context?: string) =>
       sdk.dialogs
         .openCurrentApp({
-          title: 'Select product',
+          title: context === 'category' ? 'Select category' : 'Select product',
           shouldCloseOnEscapePress: true,
           shouldCloseOnOverlayClick: true,
           width: 'fullWidth',
