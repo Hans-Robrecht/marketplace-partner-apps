@@ -17,13 +17,26 @@ type Props = CardProps<'article'> & {
   image: ImageType;
 } & (
     | {
-        onClose: () => void;
+        onClose?: () => void;
         ariaCloseButton?: string;
       }
     | { onClose?: never; ariaCloseButton?: never }
   );
 
-const ProductCard = ({ selected, identifier, price, subtitle, title, warning, style, image, onClose, padding, ...props }: Props): ReactElement => {
+const ProductCard = ({
+  selected,
+  identifier,
+  price,
+  subtitle,
+  title,
+  warning,
+  style,
+  image,
+  onClose,
+  ariaCloseButton = 'Close product',
+  padding,
+  ...props
+}: Props): ReactElement => {
   const withDragHandle = 'withDragHandle' in props ? props.withDragHandle : false;
   const card = (
     <Card
@@ -35,9 +48,7 @@ const ProductCard = ({ selected, identifier, price, subtitle, title, warning, st
       withDragHandle={withDragHandle}
       padding={withDragHandle ? 'none' : padding}
       {...props}>
-      {onClose && (
-        <CloseButton aria={props.ariaCloseButton ?? 'Close product'} onClick={onClose} style={{ position: 'absolute', top: '0.5em', right: '0.5em' }} />
-      )}
+      {onClose && <CloseButton aria={ariaCloseButton} onClick={onClose} style={{ position: 'absolute', top: '0.5em', right: '0.5em' }} />}
       <Flex flexDirection="column" justifyContent="space-between" alignItems="center" fullHeight padding={withDragHandle ? 'spacingM' : undefined}>
         <Flex flexDirection="column" style={{ marginRight: 'auto', maxWidth: '100%', height: '5.25em' }}>
           <Text fontSize="fontSizeXl" fontWeight="fontWeightDemiBold" isTruncated>
