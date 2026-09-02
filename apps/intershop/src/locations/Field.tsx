@@ -15,6 +15,7 @@ import CategoryCardType from '../types/CategoryCard';
 import LoadingIcon from '../components/LoadingIcon';
 import { replaceChannelAndApplication } from '../utils/replace';
 import FetchFilters from '../types/FetchFilters';
+import { SortableCardList } from '../components/SortableCardList';
 
 interface Popovers extends Record<'deleteSelection' | 'changeChannelOrApplication', boolean> {}
 
@@ -349,6 +350,15 @@ const Field = () => {
     </Popover>
   );
 
+  const handleOnReorderProducts = useCallback((reorderedProducts: (Product & { id: string })[]) => {
+    const { ...data } = sdk.field.getValue();
+    sdk.field.setValue({
+      ...data,
+      products: reorderedProducts.map(({ sku }) => sku),
+    });
+    setProducts(reorderedProducts.map(({ id, ...product }) => product));
+  }, []);
+
   if ((channels.length > 1 && !selectedChannel) || (applications.length > 1 && !selectedChannel) || displayChannelSelector) {
     return (
       <>
@@ -466,24 +476,27 @@ const Field = () => {
         {products.length || categories.length ? (
           <Stack flex="max-content" paddingBottom="spacingS" fullWidth style={{ overflowX: 'auto' }}>
             {products.length ? (
-              products.map(({ brand: title, title: subtitle, image, price, sku }, i) => (
-                <ProductCard
-                  key={i}
-                  price={price}
-                  title={title}
-                  subtitle={subtitle}
-                  identifier={sku}
-                  image={{
-                    src: image,
-                    alt: '',
-                  }}
-                  onClose={() => {
-                    handleOnCloseProduct(sku);
-                  }}
-                  aria="Remove product"
-                  style={{ width: '20%', height: '16.5em', flexShrink: 0 }}
-                />
-              ))
+              <SortableCardList
+                items={products.map((product) => ({
+                  ...product,
+                  id: product.sku,
+                }))}
+                onItemsChange={handleOnReorderProducts}
+                renderCard={(product, sortableCardProps) => (
+                  <ProductCard
+                    {...sortableCardProps}
+                    price={product.price}
+                    title={product.brand}
+                    subtitle={product.title}
+                    identifier={product.sku}
+                    image={{ src: product.image, alt: '' }}
+                    onClose={() => {
+                      handleOnCloseProduct(product.sku);
+                    }}
+                    style={{ width: '15%', height: '12em', flexShrink: 0 }}
+                  />
+                )}
+              />
             ) : (
               <Stack flexDirection="column" spacing="spacingS" alignItems="baseline" style={{ width: '100%' }}>
                 {categories.map((category) => category)}
