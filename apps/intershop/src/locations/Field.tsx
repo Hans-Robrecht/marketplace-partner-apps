@@ -493,7 +493,7 @@ const Field = () => {
                     onClose={() => {
                       handleOnCloseProduct(product.sku);
                     }}
-                    style={{ width: '15%', height: '12em', flexShrink: 0 }}
+                    style={{ width: '20%', height: '15em', flexShrink: 0 }}
                   />
                 )}
               />
