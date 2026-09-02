@@ -499,7 +499,14 @@ const Field = () => {
               />
             ) : (
               <Stack flexDirection="column" spacing="spacingS" alignItems="baseline" style={{ width: '100%' }}>
-                {categories.map((category) => category)}
+                {categoriesData.map((category) => (
+                  <CategoryCard
+                    key={category.id}
+                    thumbnailSrc={category.image ? `${sdk.parameters.installation.imageBase}${category.image}` : ''}
+                    title={category.title}
+                    onClose={() => handleOnCloseCategory(category.id, [])}
+                  />
+                ))}
               </Stack>
             )}
           </Stack>
