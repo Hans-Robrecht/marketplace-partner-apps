@@ -93,11 +93,13 @@ const Field = () => {
         .then((json) => json.elements.map((element: any) => jsonMapper(productMapper, element)))
         .then((mappedJsonElements: Array<MappedProductJson>) =>
           setProducts(
-            mappedJsonElements.map(({ image, price, ...product }) => ({
-              ...product,
-              image,
-              price: `$${price}`,
-            })),
+            mappedJsonElements
+              .map(({ image, price, ...product }) => ({
+                ...product,
+                image,
+                price: `$${price}`,
+              }))
+              .toSorted((productA, productB) => skus.indexOf(productA.sku) - skus.indexOf(productB.sku)),
           ),
         )
         .then(() => setLoading(false))
