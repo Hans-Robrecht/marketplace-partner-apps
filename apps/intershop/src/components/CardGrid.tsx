@@ -5,7 +5,7 @@ import { default as ProductCard } from './ProductCard';
 interface CardType extends Omit<ComponentProps<typeof ProductCard>, 'onClick' | 'isSelected'> {
   canBeClicked?: boolean;
   sku: string;
-  selected: boolean;
+  selected?: boolean;
 }
 
 interface Props {
